@@ -1,0 +1,144 @@
+@use 'sass:math';
+
+$duration: 500ms;
+$img-width: 150px;
+$height: math.div($img-width * 3, 2);
+$gap: 1.5rem;
+$bottom: 1.5rem;
+$left: calc(100% - #{$img-width} * 3.5 - #{$gap} * 2);
+$left-small-screen: calc(100% - #{$img-width} * 1.75);
+
+@mixin small-img {
+  width: $img-width;
+  height: $height;
+  border-radius: 1.25rem;
+}
+
+@mixin big-img {
+  border-radius: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.banner {
+  background-size: cover;
+  background-position-x: center;
+  background-position-y: center;
+
+  width: 100%;
+  height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+
+  img {
+    @include small-img;
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
+    will-change: left, bottom, width, height;
+  }
+
+  .image-small {
+    position: absolute;
+    bottom: $bottom;
+    left: $left;
+    animation: grow-up $duration ease forwards;
+  }
+
+  .image-big {
+    position: absolute;
+    @include big-img;
+    animation: shrink-down $duration ease forwards;
+  }
+
+  .slider {
+    display: flex;
+    gap: $gap;
+    position: absolute;
+    bottom: $bottom;
+    left: $left;
+
+    &.next {
+      img {
+        &:first-child {
+          opacity: 0;
+        }
+        transition: transform $duration ease;
+        transform: translateX(calc(-1 * (#{$img-width} + #{$gap})));
+      }
+    }
+
+    &.prev {
+      img {
+        transition: transform $duration ease;
+        transform: translateX(calc(#{$img-width} + #{$gap}));
+      }
+    }
+  }
+
+  .arrows {
+    position: absolute;
+    top: 50%;
+    left: 120px;
+    display: flex;
+    align-items: center;
+    margin-right: 2rem;
+    gap: 0.75rem;
+
+    button {
+      font-size: large;
+      font-weight: bold;
+      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 1px solid white;
+      background-color: gray;
+      transition: all 0.3s ease;
+
+      &:hover {
+        cursor: pointer;
+        background-color: white;
+        color: black;
+      }
+    }
+  }
+}
+
+@keyframes grow-up {
+  to {
+    @include big-img;
+  }
+}
+
+@keyframes shrink-down {
+  to {
+    @include small-img;
+    bottom: $bottom;
+    left: $left;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .banner {
+    .slider {
+      left: $left-small-screen;
+    }
+
+    .image-small {
+      left: $left-small-screen;
+    }
+
+    .image-big {
+      animation: shrink-down-small-screen $duration ease forwards;
+    }
+  }
+}
+
+@keyframes shrink-down-small-screen {
+  to {
+    @include small-img;
+    bottom: $bottom;
+    left: $left-small-screen;
+  }
+}
